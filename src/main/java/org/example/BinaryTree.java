@@ -1,6 +1,7 @@
 package org.example;
 
-
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class BinaryTree {
     private Node root;
@@ -14,13 +15,6 @@ public class BinaryTree {
         this.root = root;
     }
 
-    public boolean isRoot(Node parent) {
-        if (parent == null) {
-            return true;
-        }
-        return false;
-    }
-
     public boolean isEmpty(Node node){
         if(node == null){
             return true;
@@ -28,15 +22,7 @@ public class BinaryTree {
         return false;
     }
 
-    public boolean isLeaf(Node node) {
-        if (node.getLeft() == null && node.getRight() == null) {
-            return true;
-        }
-        return false;
-    }
-
-    public int getDegreeRoot(Node root) {
-        int degree = 0;
+    public int getDegreeRoot(Node root, int degree ) {
         if (root == null) {
             return 0;
         }
@@ -49,49 +35,67 @@ public class BinaryTree {
         return degree;
     }
 
-    public int getHeightRoot(Node root) {
-        if (isEmpty(root)) {
-            return -1;
-        } else {
-            if (root.getLeft() == null && root.getRight() == null) {
-                return 0;
-            } else {
-                if (root.getRight() != null && root.getLeft() != null) {
-                    return (getHeightRoot(root.getRight()) + 1);
-                }
-                return (getHeightRoot(root.getLeft()) + 1);
-
-            }
-        }
-    }
-    int getDepth(Node root)
+    public int getHeightRoot(Node root)
     {
         if (root == null)
             return 0;
-        int leftDepth = getDepth(root.getLeft());
-        int rightDepth = getDepth(root.getRight());
+        else {
+            int leftHeight = getHeightRoot(root.getLeft());
+            int rightHeight = getHeightRoot(root.getRight());
 
-        if (leftDepth > rightDepth)
-            return (leftDepth + 1);
-        else
-            return (rightDepth + 1);
+            if (leftHeight > rightHeight)
+                return (leftHeight + 1);
+            else
+                return (rightHeight + 1);
+        }
     }
-    private Node addRecursive(Node current, String value) {
-        if (current == null) {
-            return new Node(value);
+    public int getHeight(){
+        return getHeightRoot(this.root)-1;
+    }
+    public int getDepth(Node root)
+    {
+        if (root == null)
+            return 0;
+        else {
+            int leftDepth = getDepth(root.getLeft());
+            int rightDepth = getDepth(root.getRight());
+
+            if (leftDepth > rightDepth)
+                return (leftDepth + 1);
+            else
+                return (rightDepth + 1);
         }
-        if (current.getValue().compareTo(value) > 0) {
-            current.setLeft(addRecursive(current.getLeft(), value));
-        } else if (current.getValue().compareTo(value) < 0) {
-            current.setRight(addRecursive(current.getRight(), value));
-        } else {
-            return current;
+    }
+    private Node addRecursive(Node root, String data) {
+
+        if (root == null) {
+            root = new Node(data);
+            return root;
         }
 
-        return current;
+        if (data.compareTo(root.getValue()) < 0)
+            root.setLeft( addRecursive(root.getLeft(), data));
+        else if (data.compareTo(root.getValue()) > 0)
+            root.setRight( addRecursive(root.getRight(), data));
+
+        // Return the unchanged node pointer
+        return root;
     }
     public void add(String value) {
         root = addRecursive(root, value);
+    }
+
+    public Node searchNode(Node current, String value){
+        if (current == null)
+            return null;
+        if (current.getValue().equals(value)) {
+            return current;
+        }
+        Node node = searchNode(current.getLeft(), value);
+        if (node == null) {
+            node = searchNode(current.getRight(), value);
+        }
+        return node;
     }
 
     public void preOrderTraversal(Node node){
@@ -113,6 +117,34 @@ public class BinaryTree {
             inOrderTraversal(node.getLeft());
             System.out.println(node.getValue());
             inOrderTraversal(node.getRight());
+        }
+    }
+
+    public void printLevelOrder(Node root)
+    {
+
+        if (root == null)
+            return;
+
+        Queue<Node> q = new LinkedList<Node>();
+
+        q.add(root);
+
+        while (true) {
+            int nodeCount = q.size();
+            if (nodeCount == 0)
+                break;
+            while (nodeCount > 0) {
+                Node node = q.peek();
+                System.out.print(node.getValue() + " ");
+                q.remove();
+                if (node.getLeft() != null)
+                    q.add(node.getLeft());
+                if (node.getRight() != null)
+                    q.add(node.getRight());
+                nodeCount--;
+            }
+            System.out.println("\n");
         }
     }
 }

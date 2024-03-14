@@ -43,12 +43,26 @@ public class Node {
         return value;
     }
 
-    public Node parent(){
-        return parent;
+    public Node getNode(Node current) {
+        if (current == null) {
+            return null;
+        }
+
+        if (current.getValue().compareTo(value) == 0) {
+            return current;
+        }
+        Node foundNode = getNode(current.getLeft());
+
+        if (foundNode == null) {
+            foundNode = getNode(current.getRight());
+        }
+
+        return foundNode;
     }
 
+
     public boolean isRoot(){
-        if(parent == null){
+        if(this.parent == null){
             return true;
         }
         return false;
@@ -61,14 +75,18 @@ public class Node {
         return false;
     }
 
-    public int getNodeHeight(Node node, int height){
-        if( node.parent == null){
-            return height;
+    public int getNodeHeight(Node node, int height) {
+        if (node == null) {
+            return -1; // Assuming height of a non-existing node is -1
         }
-        return getNodeHeight(node.parent, height+1);
+
+        int leftHeight = getNodeHeight(node.getLeft(), height + 1);
+        int rightHeight = getNodeHeight(node.getRight(), height + 1);
+
+        return Math.max(leftHeight, rightHeight);
     }
 
-    public int getDegreeNode(Node node) {
+    public int getNodeDegree(Node node) {
         int degree = 0;
         if (node == null) {
             return 0;
@@ -81,18 +99,18 @@ public class Node {
         }
         return degree;
     }
-    public int getLevel(Node node, String value, int level) {
+    public int getLevel(Node node,  int level) {
         if (node == null) {
             return 0;
         }
         if (Objects.equals(node.value, value)) {
             return level;
         }
-        int downlevel = getLevel(node.left, value, level + 1);
+        int downlevel = getLevel(node.left, level + 1);
         if (downlevel != 0) {
             return downlevel;
         }
-        downlevel = getLevel(node.right, value, level + 1);
+        downlevel = getLevel(node.right, level + 1);
         return downlevel;
     }
 
